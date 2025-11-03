@@ -952,7 +952,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_ICcuNOIkf4oMi6xyueX2qdNvFQ4ScBjU8cV9CLClcl09pIUjYtPDXxZOKb8sukUo-A/exec"; // 🔧 ganti setelah buat GAS nanti
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_ICcuNOIkf4oMi6xyueX2qdNvFQ4ScBjU8cV9CLClcl09pIUjYtPDXxZOKb8sukUo-A/exec"; // 🔧 ganti jika kamu buat ulang web app-nya
 
 // Ambil seluruh data dari tabel
 function ambilDataTabel(id) {
@@ -971,31 +971,30 @@ function ambilDataTabel(id) {
   return data;
 }
 
-// Cek otomatis apakah tanggal sudah pernah diinput
+// Cek apakah tanggal sudah ada di Google Sheet
 async function cekSudahAda(tanggal) {
   try {
     const res = await fetch(`${WEB_APP_URL}?tanggal=${tanggal}`);
     const data = await res.json();
-    return data.exists;
+    return data.sudahAda; // ✅ sesuai dengan GAS
   } catch (e) {
     console.error("Gagal cek tanggal:", e);
     return false;
   }
 }
 
-// Ubah teks tombol berdasarkan tanggal
+// Ubah tombol Simpan/Edit berdasarkan status tanggal
 async function updateTombol() {
   const tanggal = document.getElementById("tanggal").value;
   const sudahAda = await cekSudahAda(tanggal);
   const btn = document.getElementById("btnSimpan");
+
   if (sudahAda) {
-    btn.classList.remove("btn-success");
-    btn.classList.add("btn-warning");
+    btn.className = "btn btn-warning";
     btn.innerHTML = `<i class="fas fa-edit"></i> Edit Data Google Sheet`;
   } else {
-    btn.classList.remove("btn-warning");
-    btn.classList.add("btn-primary");
-    btn.innerHTML = `<i class="fas fa-save"></i> Simpan`;
+    btn.className = "btn btn-primary";
+    btn.innerHTML = `<i class="fas fa-save"></i> Simpan ke Google Sheet`;
   }
 }
 
@@ -1067,14 +1066,12 @@ document.getElementById("btnSimpan").addEventListener("click", async () => {
 
 // cek otomatis setiap kali tanggal berubah
 document.getElementById("tanggal").addEventListener("change", updateTombol);
-
-// jalankan sekali saat awal
 document.addEventListener("DOMContentLoaded", updateTombol);
 </script>
 
-
 </body>
 </html>
+
 
 
 
