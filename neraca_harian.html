@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neraca Harian KCP BERBAH 55573</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3fffd;
+  margin: 30px;
+  font-size: 13px;
+}
+
+h2 {
+  text-align: center;
+  background: #1dbdc9;
+  color: #fff;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+h3 {
+  text-align: center;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ========== HEADER TANGGAL & SELISIH ========== */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+/* ---------- TANGGAL CARD ---------- */
+.card-tanggal {
+  flex: 0 0 auto;
+  width: 260px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-tanggal label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.card-tanggal input[type="date"] {
+  font-size: 14px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ---------- SELISIH CARD ---------- */
+.card-selisih {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.15);
+  padding: 10px;
+  width: 280px;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.card-selisih table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card-selisih td {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: right;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+}
+
+.card-selisih td:first-child {
+  text-align: left;
+  border-right: none;
+}
+.card-selisih td:last-child {
+  border-left: none;
+}
+
+/* ---------- SELISIH STICKY ---------- */
+.card-selisih.sticky {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  transform: translateY(0);
+}
+
+.card-selisih.is-sticky {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* ========== CONTAINER TABEL ========== */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+}
+
+/* ---------- CARD UMUM ---------- */
+.card {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  padding: 10px;
+  min-width: 250px;
+  box-sizing: border-box;
+}
+
+/* ---------- CARD BESAR (kiri & tengah) ---------- */
+.card-kiri,
+.card-tengah {
+  flex: 1 1 calc((100% - 274px) / 2);
+  /* total ruang dikurangi card kanan 250px + 24px gap */
+}
+
+.card-kiri input,
+.card-tengah input {
+  border-radius: 4px;
+}
+
+.card-kiri input:focus,
+.card-tengah input:focus {
+  outline: none;
+  background: #ffe3d5;
+  <!-- padding: 0px; -->
+}
+
+/* ---------- CARD KANAN (lebih kecil) ---------- */
+.card-kanan {
+  flex: 0 0 250px;
+  max-width: 250px;
+  overflow-x: visible;
+}
+
+.card-kanan table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+
+.card-kanan th,
+.card-kanan td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.card-kanan th {
+  background: #219ebc;
+  color: #fff;
+  font-weight: bold;
+}
+
+.card-kanan input.rupiah-input {
+  width: 100%;
+  text-align: right;
+  border: none;
+  padding: 0px;
+  font-size: 12px;
+  background: #fdffee;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.card-kanan input.rupiah-input:focus {
+  outline: none;
+  background: #ffe3d5;
+}
+
+.card-kanan input.readonly {
+  background: #fafafa !important;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Rata kanan angka total */
+.card-kanan tfoot td:last-child {
+  text-align: right;
+  padding-right: 10px;
+}
+
+/* ========== TABEL ========== */
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: #fff;
+  font-size: 12px;
+  table-layout: fixed;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 3px !important;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+th {
+  background: #219ebc;
+  color: white;
+}
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  border: none;
+  padding: 0px;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+input[readonly] {
+  background: #fff;
+}
+
+input:not([readonly]) {
+  background: #fdffee;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* ========== WARNA BARIS ========== */
+.subtotal { background: #ffeb7f; font-weight: bold !important; }
+.total { background: #8ecae6; font-weight: bold !important; }
+
+/* ========== POSISI TULISAN ========== */
+/* ---------- TRX tengah ---------- */
+td .trx1, td .trx2, td.totalTrx {
+  text-align: center;
+}
+
+/* ---------- BSU kanan ---------- */
+td .bsu1, td .bsu2, td.totalBsu {
+  text-align: right;
+  <!-- padding-right:10px; -->
+}
+td.totalBsu {
+  text-align: right;
+}
+
+/* ---------- Baris subtotal tidak bisa diklik ---------- */
+tr.subtotal td {
+  pointer-events: none;
+  background: #ffeb7f;
+  font-weight: bold;
+}
+
+/* ========== POSISI LAYAR ========== */
+/* ========== 1️⃣ DESKTOP BESAR (>=1472px ~ 1920px) ========== */
+@media (min-width: 1472px) {
+  .container {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .card-kiri,
+  .card-tengah {
+    flex: 1 1 calc((100% - 274px) / 2);
+  }
+
+  .card-kanan {
+    flex: 0 0 250px;
+    max-width: 250px;
+    margin-top: 0;
+  }
+}
+
+/* ========== 2️⃣ LAYAR 1471px KE BAWAH — card kanan turun tapi tetap kecil ========== */
+@media (max-width: 1471px) {
+  .container {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .card-kiri,
+  .card-tengah {
+    flex: 1 1 48%;
+    min-width: 400px;
+  }
+
+  /* card kanan di bawah tapi tetap ukuran kecil */
+  .card-kanan {
+    flex: none;
+    width: 280px;           /* 🔸 ubah sesuai selera (250–300px enak) */
+    max-width: 90%;
+    margin: 10px auto 0;    /* 🔸 biar center */
+    overflow-x: visible;
+  }
+
+  /* tabel di dalam card-kanan bisa scroll horizontal bila perlu */
+  .card-kanan table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+
+/* ========== 3️⃣ LAYAR SEDANG (≤958px) — semua card vertikal ========== */
+@media (max-width: 1217px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .card-kiri,
+  .card-tengah,
+  .card-kanan {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .card-kanan {
+    overflow-x: visible;
+    align-self: flex-start;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  }
+
+  .card-kanan table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .card-kanan th,
+  .card-kanan td {
+    min-width: 80px;
+  }
+}
+
+/* ========== 4️⃣ LAYAR KECIL (≤480px) — optimasi font & padding ========== */
+@media (max-width: 480px) {
+  body {
+    margin: 10px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  .card {
+    padding: 6px;
+  }
+
+  table th,
+  table td {
+    font-size: 11px;
+    padding: 2px !important;
+  }
+
+  .card-kanan table {
+    font-size: 11px;
+  }
+
+  .card-tanggal label,
+  .card-tanggal input {
+    font-size: 12px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+<h2><i class="fas fa-book"></i> NERACA HARIAN KCP BERBAH 55573</h2>
+
+
+<div class="header-row">
+  <div class="card-tanggal">
+    <label for="tanggal">Tanggal:</label>
+    <input type="date" id="tanggal">
+  </div>
+  
+<div class="text-center my-3">
+  <button id="btnSimpan" type="button" class="btn btn-primary px-3">
+    <i class="fas fa-save"></i> Simpan
+  </button>
+</div>
+
+  <div class="card-selisih" id="cardSelisih">
+    <table>
+      <tr>
+        <td id="selisihKet"><i class="fa-solid fa-check-circle"></i> SESUAI</td>
+        <td id="selisihCell">0</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+
+<div class="container">
+  <div class="card card-kiri">
+    <h3 style="color:#00b745;"><i class="far fa-arrow-alt-circle-down"></i> PENERIMAAN</h3>
+    <table id="penerimaan">
+      <colgroup>
+        <col style="width:5%">
+        <col style="width:22%">
+        <col style="width:8%">
+        <col style="width:15%">
+        <col style="width:8%">
+        <col style="width:15%">
+        <col style="width:8%">
+        <col style="width:15%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th rowspan="2">No</th>
+          <th rowspan="2">Layanan</th>
+          <th colspan="2">Loket 1 (BM)</th>
+          <th colspan="2">Loket 2 (OL)</th>
+          <th colspan="2">Total</th>
+        </tr>
+        <tr>
+          <th>Trx</th><th>Bsu</th>
+          <th>Trx</th><th>Bsu</th>
+          <th>Σ Trx</th><th>Σ Bsu</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr class="total">
+          <td colspan="6">TOTAL PENERIMAAN</td>
+          <td id="totalTrxPenerimaan">0</td>
+          <td id="totalBsuPenerimaan" style="text-align:right">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="card card-tengah">
+    <h3 style="color:#ff5500;"><i class="far fa-arrow-alt-circle-up"></i> PENGELUARAN</h3>
+    <table id="pengeluaran">
+      <colgroup>
+        <col style="width:5%">
+        <col style="width:22%">
+        <col style="width:8%">
+        <col style="width:15%">
+        <col style="width:8%">
+        <col style="width:15%">
+        <col style="width:8%">
+        <col style="width:15%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th rowspan="2">No</th>
+          <th rowspan="2">Layanan</th>
+          <th colspan="2">Loket 1 (BM)</th>
+          <th colspan="2">Loket 2 (OL)</th>
+          <th colspan="2">Total</th>
+        </tr>
+        <tr>
+          <th>Trx</th><th>Bsu</th>
+          <th>Trx</th><th>Bsu</th>
+          <th>Σ Trx</th><th>Σ Bsu</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr class="total">
+          <td colspan="6">TOTAL PENGELUARAN</td>
+          <td id="totalTrxPengeluaran">0</td>
+          <td id="totalBsuPengeluaran" style="text-align:right">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  
+<!-- ====================== CARD KANAN ====================== -->
+<div class="card-kanan">
+
+  <!-- ======== METERAI ======== -->
+  <div class="card meterai-card">
+    <h3 style="color:#6991ff;"><i class="fas fa-mail-bulk"></i> METERAI</h3>
+    <table id="tabelMeterai">
+      <thead>
+        <tr>
+          <th>KET</th>
+          <th>BSU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FISIK</td>
+          <td><input type="text" class="rupiah-input meterai-input" id="fisik"></td>
+        </tr>
+        <tr>
+          <td>AMPRAH</td>
+          <td><input type="text" class="rupiah-input meterai-input" id="amprah"></td>
+        </tr>
+        <tr>
+          <td>TUNAI</td>
+          <td><input type="text" class="rupiah-input readonly" id="tunai" readonly></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background: #8ecae6; font-weight: bold;">
+          <td>TOTAL</td>
+          <td id="totalMeterai">7.500.000</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ======== PANJAR ======== -->
+  <div class="card panjar-card" style="margin-top:10px;">
+    <h3 style="color:#ff69ca;"><i class="fas fa-wallet"></i> PANJAR</h3>
+    <table id="tabelPanjar">
+      <thead>
+        <tr>
+          <th>KET</th>
+          <th>BSU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>100.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>75.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>50.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>20.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>10.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>5.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>2.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>1.000</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>500</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>200</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>100</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+        <tr><td>lainnya</td><td><input type="text" class="rupiah-input panjar-input"></td></tr>
+      </tbody>
+      <tfoot>
+        <tr style="background: #8ecae6; font-weight: bold;">
+          <td>TOTAL</td>
+          <td id="totalPanjar">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+</div>
+</div>
+
+
+
+
+<div id="screen-size" style="
+  position: fixed;
+  bottom: 6px;
+  right: 10px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 9999;
+  font-family: monospace;
+"></div>
+
+<script>
+function updateScreenSize() {
+  document.getElementById('screen-size').textContent =
+    window.innerWidth + 'px';
+}
+window.addEventListener('resize', updateScreenSize);
+updateScreenSize();
+</script>
+
+
+  <p class="small-note">Input Neraca secara berkala</p>
+
+<!-- ✅ Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+const penerimaanData = [
+  "PANJAR DITERIMA", "PANJAR OPS DITAHAN", "SISA PANJAR PENSIUN", "SISA PANJAR BANSOS", "PANJAR ...", "A. Jumlah Panjar",
+  "MILEAPP", "O-TOKO", "B. Jumlah MileApp",
+  "RS-3 (KIRIM)", "BEA RS-3", "C. Jumlah RS-3",
+  "POSPAY", "D. Jumlah POSPAY",
+  "METERAI (Amprah)", "PRANGKO (Amprah)", "E. Jumlah Amprah",
+  "HUTIP DINKOP", "(lainnya)", "(lainnya)", "(lainnya)", "F. Jumlah (12–15)"
+];
+
+const pengeluaranData = [
+  "CASH OUT", "PENSIUN REG", "PENSIUN BTPN", "E-BATARA (BTN)", "A. Jumlah POSPAY",
+  "RS-4 (BAYAR)", "B. Jumlah RS-4",
+  "INVOICE DINKOP", "INVOICE MARKETPLACE", "INVOICE O-TOKO", "QRIS", "C. Jumlah MILEAPP",
+  "PEMBAYARAN BANSOS", "(lainnya)", "(lainnya)", "D. Jumlah (10–12)",
+  "PENGIRIMAN REMISE", "PENGIRIMAN VA", "PENGEMBALIAN PJ PENS", "PENGEMBALIAN PJ BANSOS", "E. Jumlah Pengiriman Panjar",
+  "PANJAR DITAHAN", "PANJAR DITAHAN PENSIUN", "PANJAR DITAHAN BANSOS", "F. Jumlah Panjar Ditahan"
+];
+
+function buatTabel(id, data) {
+  const tbody = document.querySelector(`#${id} tbody`);
+  let no = 1; // nomor hanya untuk baris normal
+
+  data.forEach((layanan) => {
+    const tr = document.createElement("tr");
+    const isSubtotal = layanan.match(/^[A-F]\./);
+    const isEditable = layanan.includes("...") || layanan.includes("(lainnya)");
+
+    // jika subtotal, tidak ada nomor dan tidak bisa diklik
+    const tdNo = isSubtotal ? `<td></td>` : `<td>${no++}</td>`;
+    const tdLayanan = isSubtotal
+      ? `<td><input type="text" value="${layanan}" readonly></td>`
+      : `<td><input type="text" value="${layanan}" ${isEditable ? "" : "readonly"}></td>`;
+
+    tr.innerHTML = `
+      ${tdNo}
+      ${tdLayanan}
+      <td><input type="text" class="trx1 angka" ${isSubtotal ? "readonly" : ""}></td>
+      <td><input type="text" class="bsu1 angka" ${isSubtotal ? "readonly" : ""}></td>
+      <td><input type="text" class="trx2 angka" ${isSubtotal ? "readonly" : ""}></td>
+      <td><input type="text" class="bsu2 angka" ${isSubtotal ? "readonly" : ""}></td>
+      <td class="totalTrx">0</td>
+      <td class="totalBsu">0</td>
+    `;
+
+    if (isSubtotal) tr.classList.add("subtotal");
+    tbody.appendChild(tr);
+  });
+}
+
+/* format ribuan */
+function formatRibuanForInput(angka) {
+  if (!angka) return "";
+  return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+function formatRibuanForTotal(angka) {
+  if (!angka && angka !== 0) return "";
+  return Number(angka).toLocaleString("id-ID");
+}
+function bersihkanFormat(str) {
+  return parseFloat(String(str).replace(/\./g, "")) || 0;
+}
+
+function hitungTabel(id) {
+  const rows = document.querySelectorAll(`#${id} tbody tr`);
+  let totalTrx = 0, totalBsu = 0;
+  let grup = [];
+
+  rows.forEach((row) => {
+    // ambil nilai bersih (angka)
+    const t1 = bersihkanFormat(row.querySelector(".trx1")?.value || "0");
+    const b1 = bersihkanFormat(row.querySelector(".bsu1")?.value || "0");
+    const t2 = bersihkanFormat(row.querySelector(".trx2")?.value || "0");
+    const b2 = bersihkanFormat(row.querySelector(".bsu2")?.value || "0");
+    const totalRowTrx = t1 + t2;
+    const totalRowBsu = b1 + b2;
+
+    // tampilkan TOTAL baris (selalu tunjukkan 0 jika nol)
+    row.querySelector(".totalTrx").textContent = formatRibuanForTotal(totalRowTrx);
+    row.querySelector(".totalBsu").textContent = formatRibuanForTotal(totalRowBsu);
+
+    // jika bukan subtotal, tambahkan ke grup untuk nanti subtotal
+    if (!row.classList.contains("subtotal")) {
+      grup.push({ row, t1, b1, t2, b2 });
+
+      // tambahkan ke total keseluruhan hanya baris normal (bukan baris subtotal)
+      totalTrx += totalRowTrx;
+      totalBsu += totalRowBsu;
+    } else {
+      // baris subtotal: jumlahkan grup sebelumnya (tanpa memasukkan subtotal itu ke total akhir)
+      let sumT1 = grup.reduce((a, b) => a + b.t1, 0);
+      let sumB1 = grup.reduce((a, b) => a + b.b1, 0);
+      let sumT2 = grup.reduce((a, b) => a + b.t2, 0);
+      let sumB2 = grup.reduce((a, b) => a + b.b2, 0);
+
+      // isi input subtotal (biarkan kosong kalau 0)
+      const inpT1 = row.querySelector(".trx1");
+      const inpB1 = row.querySelector(".bsu1");
+      const inpT2 = row.querySelector(".trx2");
+      const inpB2 = row.querySelector(".bsu2");
+      if (inpT1) inpT1.value = formatRibuanForInput(sumT1);
+      if (inpB1) inpB1.value = formatRibuanForInput(sumB1);
+      if (inpT2) inpT2.value = formatRibuanForInput(sumT2);
+      if (inpB2) inpB2.value = formatRibuanForInput(sumB2);
+
+      // tampilkan subtotal (selalu tampilkan 0 jika nol)
+      row.querySelector(".totalTrx").textContent = formatRibuanForTotal(sumT1 + sumT2);
+      row.querySelector(".totalBsu").textContent = formatRibuanForTotal(sumB1 + sumB2);
+
+      // reset grup untuk kelompok berikutnya
+      grup = [];
+    }
+  });
+
+  // set total akhir (hanya jumlah baris normal, subtotal tidak dihitung lagi)
+  document.querySelector(`#totalTrx${capitalize(id)}`).textContent = formatRibuanForTotal(totalTrx);
+  document.querySelector(`#totalBsu${capitalize(id)}`).textContent = formatRibuanForTotal(totalBsu);
+
+  // lalu update selisih
+  updateSelisih();
+}
+
+function updateSelisih() {
+  // helper: ambil angka dari teks yang diformat (mis. "1.234.000" -> 1234000)
+  function parseFormattedNumber(text) {
+    if (!text) return 0;
+    // hapus semua kecuali digit dan minus
+    const n = String(text).replace(/[^\d-]/g, "");
+    return n ? parseFloat(n) : 0;
+  }
+
+  // ambil teks dari sel total BSU (yang sudah kita update di hitungTabel)
+  const penerimaanText = document.getElementById("totalBsuPenerimaan")?.textContent || "";
+  const pengeluaranText = document.getElementById("totalBsuPengeluaran")?.textContent || "";
+
+  const penerimaan = parseFormattedNumber(penerimaanText);
+  const pengeluaran = parseFormattedNumber(pengeluaranText);
+  const selisih = penerimaan - pengeluaran;
+
+const selisihCell = document.getElementById("selisihCell");
+const selisihKet = document.getElementById("selisihKet");
+
+if (selisihCell) {
+  selisihCell.textContent = formatRibuanForTotal(selisih);
+
+  let warna = "#00b745";
+  let keterangan = '<i class="far fa-check-circle"></i> SESUAI';
+
+  if (selisih < 0) {
+    warna = "red";
+    keterangan = '<i class="far fa-times-circle"></i> KURANG';
+  } else if (selisih > 0) {
+    warna = "blue";
+    keterangan = '<i class="far fa-times-circle"></i> LEBIH';
+  }
+
+  selisihCell.style.color = warna;
+
+  if (selisihKet) {
+    selisihKet.innerHTML = keterangan; // pakai innerHTML karena ada ikon
+    selisihKet.style.color = warna;
+  }
+}
+
+
+  // juga tampilkan di cell rekap total (opsional — kalau kamu pakai totalPenerimaanCell/totalPengeluaranCell)
+  const totPenCell = document.getElementById("totalPenerimaanCell");
+  const totPengCell = document.getElementById("totalPengeluaranCell");
+  if (totPenCell) totPenCell.textContent = formatRibuanForTotal(penerimaan);
+  if (totPengCell) totPengCell.textContent = formatRibuanForTotal(pengeluaran);
+}
+
+
+function hapusFormat(str) {
+  return str.replace(/[^\d.-]/g, "");
+}
+
+function formatRibuanForTotal(num) {
+  if (num === undefined || num === null) return "";
+  return new Intl.NumberFormat("id-ID").format(Number(num));
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+buatTabel("penerimaan", penerimaanData);
+buatTabel("pengeluaran", pengeluaranData);
+
+// Event input: format angka realtime & hitung
+document.addEventListener("input", (e) => {
+  if (e.target.classList.contains("angka") && !e.target.hasAttribute("readonly")) {
+    let angka = String(e.target.value).replace(/\D/g, "");
+    e.target.value = formatRibuanForInput(angka);
+    hitungTabel("penerimaan");
+    hitungTabel("pengeluaran");
+  }
+});
+
+// inisialisasi tanggal (kalau ada input id="tanggal")
+if (document.getElementById("tanggal")) {
+  document.getElementById("tanggal").value = new Date().toISOString().split("T")[0];
+}
+
+// jalankan awal
+hitungTabel("penerimaan");
+hitungTabel("pengeluaran");
+</script>
+
+<script>
+document.querySelectorAll('#penerimaan tbody tr, #pengeluaran tbody tr').forEach(row => {
+  const layananCell = row.querySelector('td:nth-child(2) input[type="text"]');
+  
+  // Skip baris subtotal sepenuhnya
+  if (row.classList.contains('subtotal')) {
+    row.querySelectorAll('input').forEach(inp => {
+      inp.disabled = true;
+      inp.style.background = "#ffeb7f";
+	  inp.style.fontWeight = "bold";
+    });
+    return;
+  }
+
+  // Kalau ada kolom layanan, beri pembatasan khusus
+  if (layananCell) {
+    layananCell.addEventListener('focus', () => {
+      const val = layananCell.value.trim().toLowerCase();
+      // Hanya boleh aktif kalau mengandung 'lain' atau '...'
+      if (!(val.includes('lain') || val.includes('...'))) {
+        layananCell.blur(); // langsung hilang fokus
+      }
+    });
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const cardSelisih = document.getElementById("cardSelisih");
+  const headerRow = document.querySelector(".header-row");
+  const triggerPoint = headerRow.offsetTop + headerRow.offsetHeight;
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > triggerPoint) {
+      cardSelisih.classList.add("sticky");
+    } else {
+      cardSelisih.classList.remove("sticky");
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // === METERAI ===
+  const totalMeterai = 7500000;
+  const fisikInput = document.getElementById('fisik');
+  const amprahInput = document.getElementById('amprah');
+  const tunaiInput = document.getElementById('tunai');
+
+  function parseRupiah(str) {
+    return parseInt(str.replace(/[^\d]/g, '')) || 0;
+  }
+
+  function formatRupiah(num) {
+    return num.toLocaleString('id-ID');
+  }
+
+  function hitungMeterai() {
+    const fisik = parseRupiah(fisikInput.value);
+    const amprah = parseRupiah(amprahInput.value);
+    let tunai = totalMeterai - (fisik + amprah);
+    if (tunai < 0) tunai = 0;
+    tunaiInput.value = formatRupiah(tunai);
+  }
+
+  [fisikInput, amprahInput].forEach(inp => {
+    inp.addEventListener('input', () => {
+      const val = parseRupiah(inp.value);
+      inp.value = val ? formatRupiah(val) : '';
+      hitungMeterai();
+    });
+  });
+
+  // === PANJAR ===
+  const panjarInputs = document.querySelectorAll('.panjar-input');
+  const totalPanjar = document.getElementById('totalPanjar');
+
+  function hitungPanjar() {
+    let total = 0;
+    panjarInputs.forEach(inp => {
+      total += parseRupiah(inp.value);
+    });
+    totalPanjar.textContent = formatRupiah(total);
+  }
+
+  panjarInputs.forEach(inp => {
+    inp.addEventListener('input', () => {
+      const val = parseRupiah(inp.value);
+      inp.value = val ? formatRupiah(val) : '';
+      hitungPanjar();
+    });
+  });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const amprahInput = document.getElementById('amprah');
+
+  amprahInput.addEventListener('input', () => {
+    // ambil nilai amprah dalam bentuk angka
+    const val = amprahInput.value.replace(/[^\d]/g, '') || '0';
+    const bsuValue = parseInt(val) || 0;
+    const trxValue = Math.floor(bsuValue / 10000);
+
+    // cari baris yang teks input kolom layanan-nya "METERAI (Amprah)"
+    const rows = document.querySelectorAll('#penerimaan tbody tr');
+    rows.forEach(row => {
+      const layananInput = row.querySelector('td:nth-child(2) input');
+      if (layananInput && layananInput.value.trim().toUpperCase() === 'METERAI (AMPRAH)') {
+        const bsuInput = row.querySelector('.bsu1');
+        const trxInput = row.querySelector('.trx1');
+
+        if (bsuInput) bsuInput.value = bsuValue.toLocaleString('id-ID');
+        if (trxInput) trxInput.value = trxValue.toLocaleString('id-ID');
+      }
+    });
+
+    // panggil ulang fungsi hitung agar total dan selisih ikut update
+    hitungTabel('penerimaan');
+    hitungTabel('pengeluaran');
+  });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzjN2DwuQhldsp5edbgspdTiiI0Gh4g2uTlaXwzl936u6622zAO5LzD4y8YEWQBJGcoGQ/exec"; // 🔧 ganti setelah buat GAS nanti
+
+// Ambil seluruh data dari tabel
+function ambilDataTabel(id) {
+  const rows = document.querySelectorAll(`#${id} tbody tr`);
+  const data = [];
+  rows.forEach(row => {
+    const layanan = row.querySelector('td:nth-child(2) input')?.value || "";
+    const trx1 = row.querySelector('.trx1')?.value || "";
+    const bsu1 = row.querySelector('.bsu1')?.value || "";
+    const trx2 = row.querySelector('.trx2')?.value || "";
+    const bsu2 = row.querySelector('.bsu2')?.value || "";
+    const totalTrx = row.querySelector('.totalTrx')?.textContent || "";
+    const totalBsu = row.querySelector('.totalBsu')?.textContent || "";
+    data.push({ layanan, trx1, bsu1, trx2, bsu2, totalTrx, totalBsu });
+  });
+  return data;
+}
+
+// Cek otomatis apakah tanggal sudah pernah diinput
+async function cekSudahAda(tanggal) {
+  try {
+    const res = await fetch(`${WEB_APP_URL}?tanggal=${tanggal}`);
+    const data = await res.json();
+    return data.exists;
+  } catch (e) {
+    console.error("Gagal cek tanggal:", e);
+    return false;
+  }
+}
+
+// Ubah teks tombol berdasarkan tanggal
+async function updateTombol() {
+  const tanggal = document.getElementById("tanggal").value;
+  const sudahAda = await cekSudahAda(tanggal);
+  const btn = document.getElementById("btnSimpan");
+  if (sudahAda) {
+    btn.classList.remove("btn-success");
+    btn.classList.add("btn-warning");
+    btn.innerHTML = `<i class="fas fa-edit"></i> Edit Data Google Sheet`;
+  } else {
+    btn.classList.remove("btn-warning");
+    btn.classList.add("btn-primary");
+    btn.innerHTML = `<i class="fas fa-save"></i> Simpan`;
+  }
+}
+
+// Event tombol SIMPAN/EDIT
+document.getElementById("btnSimpan").addEventListener("click", async () => {
+  const tanggal = document.getElementById("tanggal")?.value || new Date().toISOString().split("T")[0];
+  const penerimaan = ambilDataTabel("penerimaan");
+  const pengeluaran = ambilDataTabel("pengeluaran");
+
+  const payload = {
+    tanggal,
+    penerimaan,
+    pengeluaran,
+    timestamp: new Date().toISOString()
+  };
+
+  const sudahAda = await cekSudahAda(tanggal);
+
+  if (sudahAda) {
+    const tanya = await Swal.fire({
+      title: "Edit data tanggal ini?",
+      text: "Data untuk tanggal ini sudah ada. Lanjut untuk memperbarui?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, edit",
+      cancelButtonText: "Batal"
+    });
+    if (!tanya.isConfirmed) return;
+    payload.mode = "update";
+  } else {
+    const konfirmasi = await Swal.fire({
+      title: "Kirim data ke Google Sheet?",
+      text: `Tanggal: ${tanggal}`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, simpan",
+      cancelButtonText: "Batal"
+    });
+    if (!konfirmasi.isConfirmed) return;
+    payload.mode = "insert";
+  }
+
+  Swal.fire({
+    title: "Mengirim...",
+    text: "Sedang memproses ke Google Sheet...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  try {
+    const response = await fetch(WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    if (result.status === "success") {
+      Swal.fire("Berhasil!", result.message, "success");
+      updateTombol();
+    } else {
+      Swal.fire("Gagal", result.message || "Terjadi kesalahan.", "error");
+    }
+  } catch (err) {
+    Swal.fire("Error", "Tidak dapat terhubung ke Google Apps Script.", "error");
+    console.error(err);
+  }
+});
+
+// cek otomatis setiap kali tanggal berubah
+document.getElementById("tanggal").addEventListener("change", updateTombol);
+
+// jalankan sekali saat awal
+document.addEventListener("DOMContentLoaded", updateTombol);
+</script>
+
+
+</body>
+</html>
