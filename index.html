@@ -983,7 +983,7 @@ document.getElementById('btnSimpan').addEventListener('click', async () => {
 
   try {
     // kirim ke Google Sheets
-    const webAppUrl = "https://pakposkeren.github.io/neracaloketberbah/"; // ganti dengan URL web app
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbzJkSfkMiJA1xCszrknFRzrrPcw1prQy-pWdw33l9u7dU0Iwk2mCcFtWX1qRIQA85Qr9w/exec"; // ganti dengan URL web app
     await fetch(webAppUrl, {
       method: "POST",
       body: JSON.stringify({ sheet: "Penerimaan", tanggal, rows: penerimaanRows }),
@@ -1006,3 +1006,4 @@ document.getElementById('btnSimpan').addEventListener('click', async () => {
 
 </body>
 </html>
+
