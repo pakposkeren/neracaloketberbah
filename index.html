@@ -981,23 +981,45 @@ document.getElementById('btnSimpan').addEventListener('click', async () => {
     };
   });
 
-  try {
-    // kirim ke Google Sheets
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzJkSfkMiJA1xCszrknFRzrrPcw1prQy-pWdw33l9u7dU0Iwk2mCcFtWX1qRIQA85Qr9w/exec"; // ganti dengan URL web app
-    await fetch(webAppUrl, {
-      method: "POST",
-      body: JSON.stringify({ sheet: "Penerimaan", tanggal, rows: penerimaanRows }),
-      headers: { "Content-Type": "application/json" }
-    });
-    await fetch(webAppUrl, {
-      method: "POST",
-      body: JSON.stringify({ sheet: "Pengeluaran", tanggal, rows: pengeluaranRows }),
-      headers: { "Content-Type": "application/json" }
-    });
-    alert("Data berhasil disimpan ke Google Sheet!");
-  } catch (err) {
-    console.error(err);
-    alert("Terjadi kesalahan saat menyimpan: " + err.message);
+  // konfirmasi sebelum simpan
+  const result = await Swal.fire({
+    title: 'Konfirmasi Simpan',
+    html: `Apakah Anda yakin ingin menyimpan data tanggal <strong>${tanggal}</strong> ke Google Sheet?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, Simpan',
+    cancelButtonText: 'Batal'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const webAppUrl = "https://script.google.com/macros/s/AKfycbzJkSfkMiJA1xCszrknFRzrrPcw1prQy-pWdw33l9u7dU0Iwk2mCcFtWX1qRIQA85Qr9w/exec";
+
+      await fetch(webAppUrl, {
+        method: "POST",
+        body: JSON.stringify({ sheet: "Penerimaan", tanggal, rows: penerimaanRows }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      await fetch(webAppUrl, {
+        method: "POST",
+        body: JSON.stringify({ sheet: "Pengeluaran", tanggal, rows: pengeluaranRows }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      Swal.fire({
+        title: 'Berhasil!',
+        html: `Data tanggal <strong>${tanggal}</strong> berhasil disimpan ke Google Sheet.`,
+        icon: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        title: 'Error',
+        html: `Terjadi kesalahan saat menyimpan: <pre>${err.message}</pre>`,
+        icon: 'error'
+      });
+    }
   }
 });
 
@@ -1006,4 +1028,3 @@ document.getElementById('btnSimpan').addEventListener('click', async () => {
 
 </body>
 </html>
-
