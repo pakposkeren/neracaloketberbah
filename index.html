@@ -952,124 +952,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_ICcuNOIkf4oMi6xyueX2qdNvFQ4ScBjU8cV9CLClcl09pIUjYtPDXxZOKb8sukUo-A/exec"; // 🔧 ganti setelah buat GAS nanti
+document.getElementById('btnSimpan').addEventListener('click', async () => {
+  const tanggal = document.getElementById('tanggal')?.value || new Date().toISOString().split('T')[0];
 
-// Ambil seluruh data dari tabel
-function ambilDataTabel(id) {
-  const rows = document.querySelectorAll(`#${id} tbody tr`);
-  const data = [];
-  rows.forEach(row => {
-    const layanan = row.querySelector('td:nth-child(2) input')?.value || "";
-    const trx1 = row.querySelector('.trx1')?.value || "";
-    const bsu1 = row.querySelector('.bsu1')?.value || "";
-    const trx2 = row.querySelector('.trx2')?.value || "";
-    const bsu2 = row.querySelector('.bsu2')?.value || "";
-    const totalTrx = row.querySelector('.totalTrx')?.textContent || "";
-    const totalBsu = row.querySelector('.totalBsu')?.textContent || "";
-    data.push({ layanan, trx1, bsu1, trx2, bsu2, totalTrx, totalBsu });
+  // ambil data tabel Penerimaan
+  const penerimaanRows = Array.from(document.querySelectorAll('#penerimaan tbody tr')).map(row => {
+    return {
+      layanan: row.querySelector('td:nth-child(2) input')?.value || "",
+      trx1: bersihkanFormat(row.querySelector('.trx1')?.value || "0"),
+      bsu1: bersihkanFormat(row.querySelector('.bsu1')?.value || "0"),
+      trx2: bersihkanFormat(row.querySelector('.trx2')?.value || "0"),
+      bsu2: bersihkanFormat(row.querySelector('.bsu2')?.value || "0"),
+      totalTrx: bersihkanFormat(row.querySelector('.totalTrx')?.textContent || "0"),
+      totalBsu: bersihkanFormat(row.querySelector('.totalBsu')?.textContent || "0")
+    };
   });
-  return data;
-}
 
-// Cek otomatis apakah tanggal sudah pernah diinput
-async function cekSudahAda(tanggal) {
-  try {
-    const res = await fetch(`${WEB_APP_URL}?tanggal=${tanggal}`);
-    const data = await res.json();
-    return data.sudahAda; // 🔧 ubah dari 'data.exists'
-  } catch (e) {
-    console.error("Gagal cek tanggal:", e);
-    return false;
-  }
-}
-
-
-// Ubah teks tombol berdasarkan tanggal
-async function updateTombol() {
-  const tanggal = document.getElementById("tanggal").value;
-  const sudahAda = await cekSudahAda(tanggal);
-  const btn = document.getElementById("btnSimpan");
-if (sudahAda) {
-  btn.className = "btn btn-warning"; // reset semua kelas dulu
-  btn.innerHTML = `<i class="fas fa-edit"></i> Edit`;
-} else {
-  btn.className = "btn btn-primary";
-  btn.innerHTML = `<i class="fas fa-save"></i> Simpan`;
-}
-
-}
-
-// Event tombol SIMPAN/EDIT
-document.getElementById("btnSimpan").addEventListener("click", async () => {
-  const tanggal = document.getElementById("tanggal")?.value || new Date().toISOString().split("T")[0];
-  const penerimaan = ambilDataTabel("penerimaan");
-  const pengeluaran = ambilDataTabel("pengeluaran");
-
-  const payload = {
-    tanggal,
-    penerimaan,
-    pengeluaran,
-    timestamp: new Date().toISOString()
-  };
-
-  const sudahAda = await cekSudahAda(tanggal);
-
-  if (sudahAda) {
-    const tanya = await Swal.fire({
-      title: "Edit data tanggal ini?",
-      text: "Data untuk tanggal ini sudah ada. Lanjut untuk memperbarui?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Ya, edit",
-      cancelButtonText: "Batal"
-    });
-    if (!tanya.isConfirmed) return;
-    payload.mode = "update";
-  } else {
-    const konfirmasi = await Swal.fire({
-      title: "Kirim data ke Google Sheet?",
-      text: `Tanggal: ${tanggal}`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Ya, simpan",
-      cancelButtonText: "Batal"
-    });
-    if (!konfirmasi.isConfirmed) return;
-    payload.mode = "insert";
-  }
-
-  Swal.fire({
-    title: "Mengirim...",
-    text: "Sedang memproses ke Google Sheet...",
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading()
+  // ambil data tabel Pengeluaran
+  const pengeluaranRows = Array.from(document.querySelectorAll('#pengeluaran tbody tr')).map(row => {
+    return {
+      layanan: row.querySelector('td:nth-child(2) input')?.value || "",
+      trx1: bersihkanFormat(row.querySelector('.trx1')?.value || "0"),
+      bsu1: bersihkanFormat(row.querySelector('.bsu1')?.value || "0"),
+      trx2: bersihkanFormat(row.querySelector('.trx2')?.value || "0"),
+      bsu2: bersihkanFormat(row.querySelector('.bsu2')?.value || "0"),
+      totalTrx: bersihkanFormat(row.querySelector('.totalTrx')?.textContent || "0"),
+      totalBsu: bersihkanFormat(row.querySelector('.totalBsu')?.textContent || "0")
+    };
   });
 
   try {
-    const response = await fetch(WEB_APP_URL, {
+    // kirim ke Google Sheets
+    const webAppUrl = "https://pakposkeren.github.io/neracaloketberbah/"; // ganti dengan URL web app
+    await fetch(webAppUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ sheet: "Penerimaan", tanggal, rows: penerimaanRows }),
+      headers: { "Content-Type": "application/json" }
     });
-
-    const result = await response.json();
-    if (result.status === "success") {
-      Swal.fire("Berhasil!", result.message, "success");
-      updateTombol();
-    } else {
-      Swal.fire("Gagal", result.message || "Terjadi kesalahan.", "error");
-    }
+    await fetch(webAppUrl, {
+      method: "POST",
+      body: JSON.stringify({ sheet: "Pengeluaran", tanggal, rows: pengeluaranRows }),
+      headers: { "Content-Type": "application/json" }
+    });
+    alert("Data berhasil disimpan ke Google Sheet!");
   } catch (err) {
-    Swal.fire("Error", "Tidak dapat terhubung ke Google Apps Script.", "error");
     console.error(err);
+    alert("Terjadi kesalahan saat menyimpan: " + err.message);
   }
 });
 
-// cek otomatis setiap kali tanggal berubah
-document.getElementById("tanggal").addEventListener("change", updateTombol);
-
-// jalankan sekali saat awal
-document.addEventListener("DOMContentLoaded", updateTombol);
 </script>
 
 
