@@ -952,7 +952,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_ICcuNOIkf4oMi6xyueX2qdNvFQ4ScBjU8cV9CLClcl09pIUjYtPDXxZOKb8sukUo-A/exec"; // 🔧 ganti jika kamu buat ulang web app-nya
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_ICcuNOIkf4oMi6xyueX2qdNvFQ4ScBjU8cV9CLClcl09pIUjYtPDXxZOKb8sukUo-A/exec"; // 🔧 ganti setelah buat GAS nanti
 
 // Ambil seluruh data dari tabel
 function ambilDataTabel(id) {
@@ -971,31 +971,32 @@ function ambilDataTabel(id) {
   return data;
 }
 
-// Cek apakah tanggal sudah ada di Google Sheet
+// Cek otomatis apakah tanggal sudah pernah diinput
 async function cekSudahAda(tanggal) {
   try {
     const res = await fetch(`${WEB_APP_URL}?tanggal=${tanggal}`);
     const data = await res.json();
-    return data.sudahAda; // ✅ sesuai dengan GAS
+    return data.sudahAda; // 🔧 ubah dari 'data.exists'
   } catch (e) {
     console.error("Gagal cek tanggal:", e);
     return false;
   }
 }
 
-// Ubah tombol Simpan/Edit berdasarkan status tanggal
+
+// Ubah teks tombol berdasarkan tanggal
 async function updateTombol() {
   const tanggal = document.getElementById("tanggal").value;
   const sudahAda = await cekSudahAda(tanggal);
   const btn = document.getElementById("btnSimpan");
+if (sudahAda) {
+  btn.className = "btn btn-warning"; // reset semua kelas dulu
+  btn.innerHTML = `<i class="fas fa-edit"></i> Edit`;
+} else {
+  btn.className = "btn btn-primary";
+  btn.innerHTML = `<i class="fas fa-save"></i> Simpan`;
+}
 
-  if (sudahAda) {
-    btn.className = "btn btn-warning";
-    btn.innerHTML = `<i class="fas fa-edit"></i> Edit Data Google Sheet`;
-  } else {
-    btn.className = "btn btn-primary";
-    btn.innerHTML = `<i class="fas fa-save"></i> Simpan ke Google Sheet`;
-  }
 }
 
 // Event tombol SIMPAN/EDIT
@@ -1066,12 +1067,11 @@ document.getElementById("btnSimpan").addEventListener("click", async () => {
 
 // cek otomatis setiap kali tanggal berubah
 document.getElementById("tanggal").addEventListener("change", updateTombol);
+
+// jalankan sekali saat awal
 document.addEventListener("DOMContentLoaded", updateTombol);
 </script>
 
+
 </body>
 </html>
-
-
-
-
